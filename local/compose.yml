@@ -1,0 +1,8 @@
+services:
+  test_target:
+    build:
+      context: ./
+    container_name: ansible_target
+    tty: true
+    ports:
+      - "8080:80"

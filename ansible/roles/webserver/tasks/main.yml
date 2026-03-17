@@ -1,0 +1,23 @@
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Create test index page
+  ansible.builtin.copy:
+    dest: /var/www/html/index.html
+    content: |
+      <h1>AWS Web Platform</h1>
+      <p>Nginx managed by Ansible</p>
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Validate nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false
+
+- name: Start nginx
+  ansible.builtin.command: nginx
+  changed_when: true

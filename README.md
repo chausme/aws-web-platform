@@ -1,7 +1,42 @@
 # AWS Web Platform
 
-This project demonstrates infrastructure provisioning and server configuration for a minimal web platform on AWS using Terraform and Ansible.
+Automation for provisioning and configuring a minimal web platform on AWS using Terraform and Ansible.
 
 The setup is suitable for hosting PHP-based web applications such as WordPress.
 
 Work in progress.
+
+## Local testing
+
+Note: The local environment uses Docker and is fully ephemeral. All changes are reset after `docker compose down`
+
+### 1. Setup Python environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+ansible-galaxy collection install -r ansible/collections/requirements.yml
+```
+
+### 2. Start local test container
+
+```bash
+docker compose -f local/compose.yml up -d --build
+```
+
+### 3. Run Ansible playbook
+
+```bash
+ansible-playbook -i ansible/inventories/local/inventory.ini ansible/playbook.yml
+```
+
+### 4. Verify in browser
+
+Open `http://localhost:8080` in your browser
+
+### 5. Reset environment
+
+```bash
+docker compose -f local/compose.yml down
+```
