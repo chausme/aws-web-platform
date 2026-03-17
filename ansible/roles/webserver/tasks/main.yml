@@ -18,6 +18,12 @@
   ansible.builtin.command: nginx -t
   changed_when: false
 
-- name: Start nginx
+- name: Check if nginx is running
+  ansible.builtin.command: pgrep nginx
+  register: nginx_running
+  failed_when: false
+  changed_when: false
+
+- name: Start nginx if not running
   ansible.builtin.command: nginx
-  changed_when: true
+  when: nginx_running.rc != 0
