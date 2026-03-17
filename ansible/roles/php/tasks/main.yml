@@ -1,0 +1,22 @@
+- name: Install PHP 8.3 packages
+  ansible.builtin.apt:
+    name:
+      - php8.3
+      - php8.3-fpm
+      - php8.3-cli
+      - php8.3-mysql
+      - php8.3-xml
+      - php8.3-curl
+      - php8.3-mbstring
+      - php8.3-zip
+    state: present
+    update_cache: true
+
+- name: Check if PHP-FPM socket exists
+  ansible.builtin.stat:
+    path: /run/php/php8.3-fpm.sock
+  register: php_fpm_socket
+
+- name: Start PHP-FPM if not running
+  ansible.builtin.command: php-fpm8.3 -D
+  when: not php_fpm_socket.stat.exists
