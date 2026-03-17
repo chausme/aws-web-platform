@@ -4,14 +4,32 @@
     state: present
     update_cache: true
 
-- name: Create test index page
+- name: Configure nginx for PHP
   ansible.builtin.copy:
-    dest: /var/www/html/index.html
+    dest: /etc/nginx/sites-available/default
     content: |
-      <h1>AWS Web Platform</h1>
-      <p>Nginx managed by Ansible</p>
-    owner: root
-    group: root
+      server {
+          listen 80;
+          root /var/www/html;
+          index index.php index.html;
+
+          location / {
+              try_files $uri $uri/ =404;
+          }
+
+          location ~ \.php$ {
+              include snippets/fastcgi-php.conf;
+              fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+          }
+      }
+
+- name: Create PHP test file
+  ansible.builtin.copy:
+    dest: /var/www/html/index.php
+    content: |
+      <?php phpinfo();
+    owner: www-data
+    group: www-data
     mode: "0644"
 
 - name: Validate nginx configuration
