@@ -41,10 +41,11 @@
 
 - name: Check if nginx is running
   ansible.builtin.command: pgrep nginx
-  register: nginx_running
+  register: webserver_nginx_running
   failed_when: false
   changed_when: false
 
 - name: Start nginx if not running
   ansible.builtin.command: nginx
   when: nginx_running.rc != 0
+  changed_when: nginx_running.rc != 0
