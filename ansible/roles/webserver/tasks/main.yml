@@ -47,5 +47,5 @@
 
 - name: Start nginx if not running
   ansible.builtin.command: nginx
-  when: nginx_running.rc != 0
-  changed_when: nginx_running.rc != 0
+  when: webserver_nginx_running.rc != 0
+  changed_when: webserver_nginx_running.rc != 0
