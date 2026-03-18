@@ -1,22 +1,33 @@
-- name: Install PHP 8.3 packages
+- name: Validate PHP role variables
+  ansible.builtin.import_tasks: validate.yml
+
+- name: Install prerequisites for apt repositories
   ansible.builtin.apt:
     name:
-      - php8.3
-      - php8.3-fpm
-      - php8.3-cli
-      - php8.3-mysql
-      - php8.3-xml
-      - php8.3-curl
-      - php8.3-mbstring
-      - php8.3-zip
+      - software-properties-common
     state: present
     update_cache: true
 
+- name: Add PHP repository (Ondrej PPA)
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Update apt cache after adding PHP repo
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install PHP packages
+  ansible.builtin.apt:
+    name: "{{ php_packages }}"
+    state: present
+
 - name: Check if PHP-FPM socket exists
   ansible.builtin.stat:
-    path: /run/php/php8.3-fpm.sock
+    path: "{{ php_fpm_socket_path }}"
   register: php_fpm_socket
 
 - name: Start PHP-FPM if not running
-  ansible.builtin.command: php-fpm8.3 -D
+  ansible.builtin.command: "{{ php_fpm_command }}"
   when: not php_fpm_socket.stat.exists
+  changed_when: not php_fpm_socket.stat.exists

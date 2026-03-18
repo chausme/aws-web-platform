@@ -1,0 +1,5 @@
+- name: Validate PHP version
+  ansible.builtin.assert:
+    that:
+      - php_version in php_supported_versions
+    fail_msg: "Unsupported php_version '{{ php_version }}'. Supported versions: {{ php_supported_versions | join(', ') }}"
