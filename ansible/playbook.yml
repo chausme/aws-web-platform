@@ -4,4 +4,4 @@
 
   roles:
     - php
-    - webserver
+    - nginx

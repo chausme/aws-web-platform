@@ -1,23 +1,32 @@
 - name: Ensure site group exists
   ansible.builtin.group:
-    name: site
+    name: "{{ site.user }}"
     system: true
 
 - name: Ensure site user exists
   ansible.builtin.user:
-    name: site
-    group: site
+    name: "{{ site.user }}"
+    group: "{{ site.user }}"
     system: true
     shell: /usr/sbin/nologin
     create_home: false
 
 - name: Create site root directory
   ansible.builtin.file:
-    path: /sites/example.com/files
+    path: "/sites/{{ site.domain }}/files"
     state: directory
-    owner: site
-    group: site
+    owner: "{{ site.user }}"
+    group: "{{ site.user }}"
     mode: "0755"
+
+- name: Create PHP test file
+  ansible.builtin.copy:
+    dest: /sites/example.com/files/index.php
+    content: |
+      <?php phpinfo();
+    owner: "{{ site.user }}"
+    group: "{{ site.user }}"
+    mode: "0644"
 
 - name: Remove default PHP-FPM www pool
   ansible.builtin.file:

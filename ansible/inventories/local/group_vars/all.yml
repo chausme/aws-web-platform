@@ -1,2 +1,7 @@
 php_version: "8.3"
-php_fpm_socket_path: "/run/php/php{{ php_version }}-fpm.sock"
+
+site:
+  domain: "example.com"
+  user: "site"
+
+php_fpm_socket_path: "/run/php/php{{ php_version }}-{{ site.user }}.sock"

@@ -1,10 +1,10 @@
-[site]
+[{{ site.user }}]
 
-user = site
-group = site
+user = {{ site.user }}
+group = {{ site.user }}
 
-listen = /run/php/php{{ php_version }}-site.sock
-listen.owner = site
+listen = /run/php/php{{ php_version }}-{{ site.user }}.sock
+listen.owner = {{ site.user }}
 listen.group = www-data
 listen.mode = 0660
 

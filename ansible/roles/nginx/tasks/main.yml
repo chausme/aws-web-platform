@@ -6,11 +6,11 @@
 
 - name: Configure nginx for PHP
   ansible.builtin.copy:
-    dest: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-available/{{ site.domain }}
     content: |
       server {
           listen 80;
-          root /sites/example.com/files;
+          root /sites/{{ site.domain }}/files;
           index index.php index.html;
 
           location / {
@@ -26,14 +26,23 @@
     group: root
     mode: "0644"
 
-- name: Create PHP test file
-  ansible.builtin.copy:
-    dest: /sites/example.com/files/index.php
-    content: |
-      <?php phpinfo();
-    owner: site
-    group: site
-    mode: "0644"
+- name: Remove default enabled nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Remove default nginx index page
+  ansible.builtin.file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+
+- name: Enable nginx site
+  ansible.builtin.file:
+    src: "/etc/nginx/sites-available/{{ site.domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ site.domain }}"
+    state: link
+  notify: Restart nginx
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t
@@ -41,11 +50,11 @@
 
 - name: Check if nginx is running
   ansible.builtin.command: pgrep nginx
-  register: webserver_nginx_running
+  register: nginx_running
   failed_when: false
   changed_when: false
 
 - name: Start nginx if not running
   ansible.builtin.command: nginx
-  when: webserver_nginx_running.rc != 0
-  changed_when: webserver_nginx_running.rc != 0
+  when: nginx_running.rc != 0
+  changed_when: nginx_running.rc != 0

@@ -22,6 +22,9 @@
     name: "{{ php_packages }}"
     state: present
 
+- name: Configure site user and PHP-FPM pool
+  ansible.builtin.import_tasks: site.yml
+
 - name: Check if PHP-FPM socket exists
   ansible.builtin.stat:
     path: "{{ php_fpm_socket_path }}"
@@ -31,6 +34,3 @@
   ansible.builtin.command: "{{ php_fpm_command }}"
   when: not php_fpm_socket.stat.exists
   changed_when: not php_fpm_socket.stat.exists
-
-- name: Configure site user and PHP-FPM pool
-  ansible.builtin.import_tasks: site.yml

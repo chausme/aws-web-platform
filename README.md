@@ -8,7 +8,7 @@ Work in progress.
 
 ## Local testing
 
-Note: The local environment uses Docker and is fully ephemeral. All changes are reset after `docker compose down`
+Note: The local environment uses Docker and is fully ephemeral. All changes are reset after `docker compose down`.
 
 ### 1. Setup Python environment
 
@@ -39,18 +39,32 @@ php_version: "8.3"
 
 To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
 
-### 4. Run Ansible playbook
+### 4. Configure site settings
+
+Site settings such as domain and system user are defined in:
+
+`ansible/inventories/local/group_vars/all.yml`
+
+```bash:
+site:
+  domain: "example.com"
+  user: "site"
+```
+
+Update these values before running the playbook if needed.
+
+### 5. Run Ansible playbook
 
 ```bash
 source .venv/bin/activate
 ansible-playbook -i ansible/inventories/local/inventory.ini ansible/playbook.yml
 ```
 
-### 5. Verify in browser
+### 6. Verify in browser
 
-Open `http://localhost:8080` in your browser
+Open `http://localhost:8080` in your browser.
 
-### 6. Reset environment
+### 7. Reset environment
 
 ```bash
 docker compose -f local/compose.yml down --rmi local
