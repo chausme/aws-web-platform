@@ -1,0 +1,6 @@
+- name: Restart php-fpm
+  ansible.builtin.shell: |
+    pkill -o php-fpm || true
+    php-fpm{{ php_version }} -D
+  args:
+    executable: /bin/bash

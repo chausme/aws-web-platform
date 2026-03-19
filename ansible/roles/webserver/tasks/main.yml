@@ -10,7 +10,7 @@
     content: |
       server {
           listen 80;
-          root /var/www/html;
+          root /sites/example.com/files;
           index index.php index.html;
 
           location / {
@@ -28,11 +28,11 @@
 
 - name: Create PHP test file
   ansible.builtin.copy:
-    dest: /var/www/html/index.php
+    dest: /sites/example.com/files/index.php
     content: |
       <?php phpinfo();
-    owner: www-data
-    group: www-data
+    owner: site
+    group: site
     mode: "0644"
 
 - name: Validate nginx configuration
