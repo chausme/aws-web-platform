@@ -31,7 +31,7 @@ The PHP version is configurable and supports versions from 7.4 to 8.5.
 
 By default, the version is defined in:
 
-`ansible/inventories/local/group_vars/all.yml`
+`ansible/group_vars/web.yml`
 
 ```bash
 php_version: "8.3"
@@ -43,7 +43,7 @@ To use a different version, update this value before running the playbook. _Note
 
 Site settings such as domain and system user are defined in:
 
-`ansible/inventories/local/group_vars/all.yml`
+`ansible/group_vars/web.yml`
 
 ```bash:
 site:
@@ -57,7 +57,7 @@ Update these values before running the playbook if needed.
 
 ```bash
 source .venv/bin/activate
-ansible-playbook -i ansible/inventories/local/inventory.ini ansible/playbook.yml
+ansible-playbook -i ansible/inventories/local/inventory.yml ansible/playbook.yml
 ```
 
 ### 6. Verify in browser

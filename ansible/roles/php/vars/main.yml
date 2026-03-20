@@ -1,0 +1,21 @@
+php_supported_versions:
+  - "7.4"
+  - "8.0"
+  - "8.1"
+  - "8.2"
+  - "8.3"
+  - "8.4"
+  - "8.5"
+
+php_packages:
+  - "php{{ php_version }}"
+  - "php{{ php_version }}-fpm"
+  - "php{{ php_version }}-cli"
+  - "php{{ php_version }}-mysql"
+  - "php{{ php_version }}-xml"
+  - "php{{ php_version }}-curl"
+  - "php{{ php_version }}-mbstring"
+  - "php{{ php_version }}-zip"
+
+php_fpm_service_name: "php{{ php_version }}-fpm"
+php_fpm_command: "php-fpm{{ php_version }} -D"

@@ -27,7 +27,7 @@
 
 - name: Check if PHP-FPM socket exists
   ansible.builtin.stat:
-    path: "{{ php_fpm_socket_path }}"
+    path: "/run/php/php{{ php_version }}-{{ site.user }}.sock"
   register: php_fpm_socket
 
 - name: Start PHP-FPM if not running
