@@ -16,6 +16,3 @@ php_packages:
   - "php{{ php_version }}-curl"
   - "php{{ php_version }}-mbstring"
   - "php{{ php_version }}-zip"
-
-php_fpm_service_name: "php{{ php_version }}-fpm"
-php_fpm_command: "php-fpm{{ php_version }} -D"

@@ -1,3 +1,11 @@
+- name: Validate site configuration
+  ansible.builtin.assert:
+    that:
+      - site is defined
+      - site.user is defined
+      - site.domain is defined
+    fail_msg: "site.user and site.domain must be defined"
+
 - name: Ensure site group exists
   ansible.builtin.group:
     name: "{{ site.user }}"
@@ -21,28 +29,9 @@
 
 - name: Create PHP test file
   ansible.builtin.copy:
-    dest: /sites/example.com/files/index.php
+    dest: /sites/{{ site.domain }}/files/index.php
     content: |
       <?php phpinfo();
     owner: "{{ site.user }}"
     group: "{{ site.user }}"
     mode: "0644"
-
-- name: Remove default PHP-FPM www pool
-  ansible.builtin.file:
-    path: "/etc/php/{{ php_version }}/fpm/pool.d/www.conf"
-    state: absent
-  notify: Restart php-fpm
-
-- name: Deploy site PHP-FPM pool
-  ansible.builtin.template:
-    src: php-fpm-pool.conf.j2
-    dest: "/etc/php/{{ php_version }}/fpm/pool.d/site.conf"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Restart php-fpm
-
-- name: Validate PHP-FPM configuration
-  ansible.builtin.command: "php-fpm{{ php_version }} -t"
-  changed_when: false

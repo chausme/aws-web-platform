@@ -1,3 +1,4 @@
+# TODO: support both systemd-based hosts and Docker targets
 - name: Restart nginx
   ansible.builtin.shell: |
     nginx -s reload || nginx

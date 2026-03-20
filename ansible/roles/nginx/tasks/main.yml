@@ -1,56 +1,25 @@
-- name: Validate nginx role variables
-  ansible.builtin.import_tasks: validate.yml
-
 - name: Install nginx
   ansible.builtin.apt:
     name: nginx
     state: present
     update_cache: true
 
-- name: Configure nginx for PHP
-  ansible.builtin.copy:
-    dest: /etc/nginx/sites-available/{{ site.domain }}
-    content: |
-      server {
-          listen 80;
-          root /sites/{{ site.domain }}/files;
-          index index.php index.html;
-
-          location / {
-              try_files $uri $uri/ =404;
-          }
-
-          location ~ \.php$ {
-              include snippets/fastcgi-php.conf;
-              fastcgi_pass unix:/run/php/php{{ php_version }}-{{ site.user }}.sock;
-          }
-      }
-    owner: root
-    group: root
-    mode: "0644"
-
 - name: Remove default enabled nginx site
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: Restart nginx
 
 - name: Remove default nginx index page
   ansible.builtin.file:
     path: /var/www/html/index.nginx-debian.html
     state: absent
-
-- name: Enable nginx site
-  ansible.builtin.file:
-    src: "/etc/nginx/sites-available/{{ site.domain }}"
-    dest: "/etc/nginx/sites-enabled/{{ site.domain }}"
-    state: link
   notify: Restart nginx
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t
   changed_when: false
 
+# TODO: support both systemd-based hosts and Docker targets
 - name: Check if nginx is running
   ansible.builtin.command: pgrep nginx
   register: nginx_running

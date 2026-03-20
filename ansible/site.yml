@@ -1,0 +1,17 @@
+- name: Configure site
+  hosts: web
+  become: true
+
+  roles:
+    - site
+
+  tasks:
+    - name: Configure PHP for site
+      ansible.builtin.include_role:
+        name: php
+        tasks_from: configure_site.yml
+
+    - name: Configure Nginx for site
+      ansible.builtin.include_role:
+        name: nginx
+        tasks_from: configure_site.yml

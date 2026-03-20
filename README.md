@@ -39,7 +39,14 @@ php_version: "8.3"
 
 To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
 
-### 4. Configure site settings
+### 4. Run server setup playbook
+
+```bash
+source .venv/bin/activate # if not already activated
+ansible-playbook -i ansible/inventories/local/inventory.yml ansible/server.yml
+```
+
+### 5. Configure site settings
 
 Site settings such as domain and system user are defined in:
 
@@ -53,18 +60,18 @@ site:
 
 Update these values before running the playbook if needed.
 
-### 5. Run Ansible playbook
+### 6. Run site setup playbook
 
 ```bash
-source .venv/bin/activate
-ansible-playbook -i ansible/inventories/local/inventory.yml ansible/playbook.yml
+source .venv/bin/activate # if not already activated
+ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
 ```
 
-### 6. Verify in browser
+### 7. Verify in browser
 
 Open `http://localhost:8080` in your browser.
 
-### 7. Reset environment
+### 8. Reset environment
 
 ```bash
 docker compose -f local/compose.yml down --rmi local

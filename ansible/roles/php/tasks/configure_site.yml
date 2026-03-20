@@ -1,0 +1,12 @@
+- name: Deploy site PHP-FPM pool
+  ansible.builtin.template:
+    src: php-fpm-pool.conf.j2
+    dest: "/etc/php/{{ php_version }}/fpm/pool.d/{{ site.user }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart php-fpm
+
+- name: Validate PHP-FPM configuration
+  ansible.builtin.command: "php-fpm{{ php_version }} -t"
+  changed_when: false

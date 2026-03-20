@@ -1,6 +1,0 @@
-- name: Validate site configuration
-  ansible.builtin.assert:
-    that:
-      - site is defined
-      - site.domain is defined
-    fail_msg: "site.user and site.domain must be defined"
