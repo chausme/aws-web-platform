@@ -1,0 +1,6 @@
+- name: Reload php-fpm # noqa: no-changed-when
+  ansible.builtin.shell: |
+    pkill -HUP -o php-fpm{{ php_version }} || php-fpm{{ php_version }} -D
+  args:
+    executable: /bin/bash
+  changed_when: false

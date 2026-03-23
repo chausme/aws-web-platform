@@ -25,53 +25,40 @@ ansible-galaxy collection install -r ansible/collections/requirements.yml
 docker compose -f local/compose.yml up -d --build
 ```
 
-### 3. Configure PHP version
-
-The PHP version is configurable and supports versions from 7.4 to 8.5.
-
-By default, the version is defined in:
-
-`ansible/group_vars/web.yml`
-
-```bash
-php_version: "8.3"
-```
-
-To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
-
-### 4. Run server setup playbook
+### 3. Run server configuration playbook
 
 ```bash
 source .venv/bin/activate # if not already activated
 ansible-playbook -i ansible/inventories/local/inventory.yml ansible/server.yml
 ```
 
-### 5. Configure site settings
+### 4. Define site configuration
 
-Site settings such as domain and system user are defined in:
+Site settings such as PHP version, domain and system user are defined in:
 
 `ansible/group_vars/web.yml`
 
-```bash:
+```bash
+php_version: "8.3"
 site:
   domain: "example.com"
   user: "site"
 ```
 
-Update these values before running the playbook if needed.
+The PHP version is configurable and supports versions from 7.4 to 8.5. To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
 
-### 6. Run site setup playbook
+### 5. Run site setup playbook
 
 ```bash
 source .venv/bin/activate # if not already activated
 ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
 ```
 
-### 7. Verify in browser
+### 6. Verify in browser
 
 Open `http://localhost:8080` in your browser.
 
-### 8. Reset environment
+### 7. Reset environment
 
 ```bash
 docker compose -f local/compose.yml down --rmi local

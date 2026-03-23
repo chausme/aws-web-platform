@@ -1,0 +1,8 @@
+- name: Add PHP repository (Ondrej PPA)
+  ansible.builtin.apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+
+- name: Update apt cache after adding PHP repo
+  ansible.builtin.apt:
+    update_cache: true

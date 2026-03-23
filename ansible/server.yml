@@ -1,7 +1,8 @@
-- name: Configure web server
+- name: Configure server
   hosts: web
   become: true
 
   roles:
-    - php
-    - nginx
+    - common
+    - nginx_server
+    - php_server

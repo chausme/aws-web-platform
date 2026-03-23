@@ -19,14 +19,14 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart nginx
+  notify: Reload nginx
 
 - name: Enable nginx site
   ansible.builtin.file:
     src: "/etc/nginx/sites-available/{{ site.domain }}"
     dest: "/etc/nginx/sites-enabled/{{ site.domain }}"
     state: link
-  notify: Restart nginx
+  notify: Reload nginx
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t

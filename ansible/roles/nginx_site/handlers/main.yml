@@ -1,0 +1,13 @@
+- name: Validate nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false
+  listen: Reload nginx
+
+# TODO: support both systemd-based hosts and Docker targets
+- name: Reload nginx
+  ansible.builtin.shell: |
+    nginx -s reload || nginx
+  args:
+    executable: /bin/bash
+  changed_when: false # primary change tracked earlier
+  listen: Reload nginx
