@@ -1,0 +1,16 @@
+- name: Download wp-cli.phar
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    dest: /usr/local/bin/wp
+    mode: "0755"
+    force: false
+
+- name: Ensure wp-cli is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/wp
+    mode: "0755"
+
+- name: Verify wp-cli installation
+  ansible.builtin.command: /usr/local/bin/wp --info
+  register: wp_cli_info
+  changed_when: false

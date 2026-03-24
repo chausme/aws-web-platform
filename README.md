@@ -28,13 +28,12 @@ docker compose -f local/compose.yml up -d --build
 ### 3. Run server configuration playbook
 
 ```bash
-source .venv/bin/activate # if not already activated
-ansible-playbook -i ansible/inventories/local/inventory.yml ansible/server.yml
+.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/server.yml
 ```
 
 ### 4. Define site configuration
 
-Site settings such as PHP version, domain and system user are defined in:
+Site settings such as PHP version, domain, system user and application type are defined in:
 
 `ansible/group_vars/web.yml`
 
@@ -43,15 +42,18 @@ php_version: "8.3"
 site:
   domain: "example.com"
   user: "site"
+  app: "wordpress" # supported: "php", "wordpress"
 ```
+
+- `php` provisions a generic PHP site
+- `wordpress` provisions a WordPress site and installs additional tooling such as WP-CLI
 
 The PHP version is configurable and supports versions from 7.4 to 8.5. To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
 
 ### 5. Run site setup playbook
 
 ```bash
-source .venv/bin/activate # if not already activated
-ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
+.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
 ```
 
 ### 6. Verify in browser

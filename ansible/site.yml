@@ -6,3 +6,5 @@
     - site
     - php_site
     - nginx_site
+    - role: wp_cli
+      when: site.app == "wordpress"

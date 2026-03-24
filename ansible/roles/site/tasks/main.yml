@@ -4,7 +4,9 @@
       - site is defined
       - site.user is defined
       - site.domain is defined
-    fail_msg: "site.user and site.domain must be defined"
+      - site.app is defined
+      - site.app in ['php', 'wordpress']
+    fail_msg: "site.user, site.domain, and site.app must be defined and valid"
 
 - name: Ensure site group exists
   ansible.builtin.group:
