@@ -8,3 +8,5 @@
     - nginx_site
     - role: wp_cli
       when: site.app == "wordpress"
+    - role: wp_site
+      when: site.app == "wordpress"
