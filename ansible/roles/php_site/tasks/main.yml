@@ -3,11 +3,18 @@
     that:
       - php_version in php_site_supported_versions
     fail_msg: "Unsupported php_version '{{ php_version }}'. Supported versions: {{ php_site_supported_versions | join(', ') }}"
+  tags: ["php", "site"]
+
+- name: Initialize PHP-FPM pool candidates
+  ansible.builtin.set_fact:
+    php_site_pool_candidates: []
+  tags: ["php", "site"]
 
 - name: Install PHP packages
   ansible.builtin.apt:
     name: "{{ php_site_packages }}"
     state: present
+  tags: ["php", "site"]
 
 - name: Deploy site PHP-FPM pool
   ansible.builtin.template:
@@ -17,18 +24,58 @@
     group: root
     mode: "0644"
   notify: Reload php-fpm
+  tags: ["php", "site"]
 
 - name: Validate PHP-FPM configuration
   ansible.builtin.command: "php-fpm{{ php_version }} -t"
   changed_when: false
+  tags: ["php", "site"]
 
   # TODO: support both systemd-based hosts and Docker targets
 - name: Check if site PHP-FPM socket exists
   ansible.builtin.stat:
     path: "/run/php/php{{ php_version }}-{{ site.user }}.sock"
   register: php_site_socket
+  tags: ["php", "site"]
 
 - name: Start PHP-FPM if not running
   ansible.builtin.command: "php-fpm{{ php_version }} -D"
   when: not php_site_socket.stat.exists
   changed_when: not php_site_socket.stat.exists
+  tags: ["php", "site"]
+
+- name: Build PHP-FPM pool candidates
+  ansible.builtin.set_fact:
+    php_site_pool_candidates: >-
+      {{
+        (php_site_pool_candidates | default([])) + [
+          {
+            'version': item,
+            'path': '/etc/php/' ~ item ~ '/fpm/pool.d/' ~ site.user ~ '.conf'
+          }
+        ]
+      }}
+  loop: "{{ php_site_supported_versions }}"
+  tags: ["php", "site"]
+
+- name: Check existing PHP-FPM pool files
+  ansible.builtin.stat:
+    path: "{{ pool.path }}"
+  loop: "{{ php_site_pool_candidates }}"
+  loop_control:
+    loop_var: pool
+  register: php_site_pool_stats
+  tags: ["php", "site"]
+
+- name: Remove old PHP-FPM pool files for this site
+  ansible.builtin.file:
+    path: "{{ result.pool.path }}"
+    state: absent
+  loop: "{{ php_site_pool_stats.results }}"
+  loop_control:
+    loop_var: result
+    label: "{{ result.pool.version }} -> {{ result.pool.path }}"
+  when:
+    - result.pool.version != php_version
+    - result.stat.exists
+  tags: ["php", "site"]

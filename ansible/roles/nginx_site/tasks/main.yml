@@ -20,6 +20,7 @@
     group: root
     mode: "0644"
   notify: Reload nginx
+  tags: ["site", "nginx", "php"]
 
 - name: Enable nginx site
   ansible.builtin.file:
@@ -27,7 +28,9 @@
     dest: "/etc/nginx/sites-enabled/{{ site.domain }}"
     state: link
   notify: Reload nginx
+  tags: ["site", "nginx"]
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t
   changed_when: false
+  tags: ["site", "nginx", "php"]

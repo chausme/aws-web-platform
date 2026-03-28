@@ -4,13 +4,16 @@
     dest: /usr/local/bin/wp
     mode: "0755"
     force: false
+  tags: ["server", "wp"]
 
 - name: Ensure wp-cli is executable
   ansible.builtin.file:
     path: /usr/local/bin/wp
     mode: "0755"
+  tags: ["server", "wp"]
 
 - name: Verify wp-cli installation
   ansible.builtin.command: /usr/local/bin/wp --info
   register: wp_cli_info
   changed_when: false
+  tags: ["server", "wp"]

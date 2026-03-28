@@ -4,3 +4,4 @@
     creates: "/sites/{{ site.domain }}/files/wp-config-sample.php"
   become: true
   become_user: "{{ site.user }}"
+  tags: ["site", "wp"]

@@ -8,8 +8,6 @@ Work in progress.
 
 ## Local testing
 
-Note: The local environment uses Docker and is fully ephemeral. All changes are reset after `docker compose down`.
-
 ### 1. Setup Python environment
 
 ```bash
@@ -48,7 +46,7 @@ site:
 - `php` provisions a generic PHP site
 - `wordpress` provisions a WordPress site and installs additional tooling such as WP-CLI
 
-The PHP version is configurable and supports versions from 7.4 to 8.5. To use a different version, update this value before running the playbook. _Note:_ Changing the PHP version requires resetting the local environment.
+The PHP version is configurable and supports versions from 7.4 to 8.5. To use a different version, update this value before running the site playbook.
 
 ### 5. Run site setup playbook
 
@@ -65,3 +63,42 @@ Open `http://localhost:8080` in your browser.
 ```bash
 docker compose -f local/compose.yml down --rmi local
 ```
+
+## Example scenarios
+
+Configuration changes are applied by updating variables and re-running playbooks.
+
+### Initial site setup
+
+Provision a new site using the current configuration:
+
+```bash
+.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
+```
+
+This will:
+
+- create the system user and directories
+- install PHP and required packages
+- configure PHP-FPM pool
+- configure and enable nginx site
+
+### Change PHP version for an existing site
+
+To change the PHP version for an existing site, update the `php_version` value in `ansible/group_vars/web.yml` and then run the site playbook again:
+
+```bash
+.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml --tags php
+```
+
+This will:
+
+- install the new PHP version if not already installed
+- create or update the PHP-FPM pool configuration
+- remove old PHP-FPM pool configurations for this site from other PHP versions
+- update nginx configuration to use the new PHP-FPM socket
+
+## Notes
+
+- Site system users are treated as persistent once created.
+- In the local Docker environment, all data is ephemeral and reset after container removal.

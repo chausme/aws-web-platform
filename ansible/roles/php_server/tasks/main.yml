@@ -2,7 +2,9 @@
   ansible.builtin.apt_repository:
     repo: ppa:ondrej/php
     state: present
+  tags: ["php", "server"]
 
 - name: Update apt cache after adding PHP repo
   ansible.builtin.apt:
     update_cache: true
+  tags: ["php", "server"]

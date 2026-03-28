@@ -3,20 +3,24 @@
     name: nginx
     state: present
     update_cache: true
+  tags: ["server", "nginx"]
 
 - name: Remove default enabled nginx site
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+  tags: ["server", "nginx"]
 
 - name: Remove default nginx index page
   ansible.builtin.file:
     path: /var/www/html/index.nginx-debian.html
     state: absent
+  tags: ["server", "nginx"]
 
 - name: Validate nginx configuration
   ansible.builtin.command: nginx -t
   changed_when: false
+  tags: ["server", "nginx"]
 
 # TODO: support both systemd-based hosts and Docker targets
 - name: Check if nginx is running
@@ -24,8 +28,10 @@
   register: nginx_server_running
   failed_when: false
   changed_when: false
+  tags: ["server", "nginx"]
 
 - name: Start nginx if not running
   ansible.builtin.command: nginx
   when: nginx_server_running.rc != 0
   changed_when: nginx_server_running.rc != 0
+  tags: ["server", "nginx"]
