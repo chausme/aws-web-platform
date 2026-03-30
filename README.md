@@ -58,7 +58,13 @@ The PHP version is configurable and supports versions from 7.4 to 8.5. To use a 
 
 Open `http://localhost:8080` in your browser.
 
-### 7. Reset environment
+### 7. Review inside the container
+
+```bash
+docker exec -it ansible_target /bin/bash
+```
+
+### 8. Reset environment
 
 ```bash
 docker compose -f local/compose.yml down --rmi local
