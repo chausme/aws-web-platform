@@ -1,0 +1,16 @@
+- name: Refresh apt package cache
+  ansible.builtin.apt:
+    update_cache: true
+  tags: ["server"]
+
+- name: Upgrade installed packages
+  ansible.builtin.apt:
+    upgrade: safe
+  tags: ["server"]
+
+- name: Install common apt prerequisites
+  ansible.builtin.apt:
+    name:
+      - software-properties-common
+    state: present
+  tags: ["server"]
