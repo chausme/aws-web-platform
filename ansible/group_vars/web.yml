@@ -2,5 +2,5 @@ php_version: "8.5"
 
 site:
   domain: "example.com"
-  user: "site"
+  user: "siteuser"
   app: "wordpress"

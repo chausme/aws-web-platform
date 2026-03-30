@@ -8,6 +8,76 @@
   notify: Reload nginx
   tags: ["site", "nginx", "php"]
 
+- name: Find nginx site config candidates
+  ansible.builtin.find:
+    paths: /etc/nginx/sites-available
+    file_type: file
+  register: nginx_site_available_files
+  tags: ["site", "nginx"]
+
+- name: Read nginx site config candidates
+  ansible.builtin.slurp:
+    src: "{{ item.path }}"
+  loop: "{{ nginx_site_available_files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  register: nginx_site_available_contents
+  tags: ["site", "nginx"]
+
+- name: Initialize old nginx config paths
+  ansible.builtin.set_fact:
+    nginx_site_old_available_paths: []
+  tags: ["site", "nginx"]
+
+- name: Collect old nginx config paths for this site user
+  ansible.builtin.set_fact:
+    nginx_site_old_available_paths: "{{ nginx_site_old_available_paths + [item.source] }}"
+  loop: "{{ nginx_site_available_contents.results }}"
+  loop_control:
+    label: "{{ item.source }}"
+  when:
+    - item.content is defined
+    - "'site_user=' + site.user in (item.content | b64decode)"
+    - item.source != '/etc/nginx/sites-available/' + site.domain
+  tags: ["site", "nginx"]
+
+- name: Determine old site domain from nginx config paths
+  ansible.builtin.set_fact:
+    nginx_site_old_domain: "{{ nginx_site_old_available_paths[0] | basename }}"
+  when: nginx_site_old_available_paths | length == 1
+  tags: ["site", "nginx"]
+
+- name: Move site directory to new domain
+  ansible.builtin.command:
+    cmd: "mv /sites/{{ nginx_site_old_domain }} /sites/{{ site.domain }}"
+  args:
+    creates: "/sites/{{ site.domain }}"
+  when:
+    - nginx_site_old_available_paths | length == 1
+    - nginx_site_old_domain != site.domain
+  changed_when: true
+  tags: ["site", "nginx"]
+
+- name: Remove old nginx site config files for this site user
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ nginx_site_old_available_paths }}"
+  loop_control:
+    label: "{{ item }}"
+  notify: Reload nginx
+  tags: ["site", "nginx"]
+
+- name: Remove old nginx enabled site symlinks for this site user
+  ansible.builtin.file:
+    path: "/etc/nginx/sites-enabled/{{ item | basename }}"
+    state: absent
+  loop: "{{ nginx_site_old_available_paths }}"
+  loop_control:
+    label: "/etc/nginx/sites-enabled/{{ item | basename }}"
+  notify: Reload nginx
+  tags: ["site", "nginx"]
+
 - name: Enable nginx site
   ansible.builtin.file:
     src: "/etc/nginx/sites-available/{{ site.domain }}"
