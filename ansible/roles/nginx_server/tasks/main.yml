@@ -5,10 +5,15 @@
     update_cache: true
   tags: ["server", "nginx"]
 
-- name: Remove default enabled nginx site
+- name: Remove default nginx site
   ansible.builtin.file:
-    path: /etc/nginx/sites-enabled/default
+    path: "{{ item }}"
     state: absent
+  loop:
+    - /etc/nginx/sites-available/default
+    - /etc/nginx/sites-enabled/default
+  loop_control:
+    label: "{{ item }}"
   tags: ["server", "nginx"]
 
 - name: Remove default nginx index page
