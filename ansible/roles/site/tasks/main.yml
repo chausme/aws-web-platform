@@ -1,44 +1,5 @@
-- name: Validate site configuration
-  ansible.builtin.assert:
-    that:
-      - site is defined
-      - site.user is defined
-      - site.domain is defined
-      - site.app is defined
-      - site.app in ['php', 'wordpress']
-    fail_msg: "site.user, site.domain, and site.app must be defined and valid"
-  tags: ["site"]
+- name: Import site validation tasks
+  ansible.builtin.import_tasks: validate.yml
 
-- name: Ensure site group exists
-  ansible.builtin.group:
-    name: "{{ site.user }}"
-    system: true
-  tags: ["site"]
-
-- name: Ensure site user exists
-  ansible.builtin.user:
-    name: "{{ site.user }}"
-    group: "{{ site.user }}"
-    system: true
-    shell: /usr/sbin/nologin
-    create_home: false
-  tags: ["site"]
-
-- name: Create site root directory
-  ansible.builtin.file:
-    path: "/sites/{{ site.domain }}/files"
-    state: directory
-    owner: "{{ site.user }}"
-    group: "{{ site.user }}"
-    mode: "0755"
-  tags: ["site"]
-
-- name: Create PHP test file
-  ansible.builtin.copy:
-    dest: /sites/{{ site.domain }}/files/index.php
-    content: |
-      <?php phpinfo();
-    owner: "{{ site.user }}"
-    group: "{{ site.user }}"
-    mode: "0644"
-  tags: ["site"]
+- name: Import site provisioning tasks
+  ansible.builtin.import_tasks: provision.yml

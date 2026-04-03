@@ -125,5 +125,5 @@ This will:
 
 ## Notes
 
-- Site system users are treated as persistent once created.
+- Site system users are treated as persistent once created and can't be changed for an existing site.
 - In the local Docker environment, all data is ephemeral and reset after container removal.

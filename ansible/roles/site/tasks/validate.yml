@@ -1,0 +1,35 @@
+- name: Validate site configuration
+  ansible.builtin.assert:
+    that:
+      - site is defined
+      - site.user is defined
+      - site.domain is defined
+      - site.app is defined
+      - site.app in ['php', 'wordpress']
+    fail_msg: "site.user, site.domain, and site.app must be defined and valid"
+  tags: ["site"]
+
+- name: Check if site root exists
+  ansible.builtin.stat:
+    path: "/sites/{{ site.domain }}"
+  register: site_root_stat
+  tags: ["site"]
+
+- name: Read site root ownership
+  ansible.builtin.stat:
+    path: "/sites/{{ site.domain }}"
+  register: site_root_owner_stat
+  when: site_root_stat.stat.exists
+  tags: ["site"]
+
+- name: Fail if existing site user differs from configured user
+  ansible.builtin.fail:
+    msg: >-
+      Can't change system user for existing site {{ site.domain }}.
+      Existing: {{ site_root_owner_stat.stat.pw_name }}.
+      Requested: {{ site.user }}.
+  when:
+    - site_root_stat.stat.exists
+    - site_root_owner_stat.stat.pw_name is defined
+    - site_root_owner_stat.stat.pw_name != site.user
+  tags: ["site"]
