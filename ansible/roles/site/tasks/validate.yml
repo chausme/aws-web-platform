@@ -33,3 +33,46 @@
     - site_root_owner_stat.stat.pw_name is defined
     - site_root_owner_stat.stat.pw_name != site.user
   tags: ["site"]
+
+- name: Check if /sites parent directory exists
+  ansible.builtin.stat:
+    path: /sites
+  register: site_parent_stat
+  tags: ["site"]
+
+- name: Find existing site directories
+  ansible.builtin.find:
+    paths: /sites
+    file_type: directory
+    recurse: false
+  register: site_existing_dirs
+  when: site_parent_stat.stat.exists
+  tags: ["site"]
+
+- name: Initialize existing site user directories list
+  ansible.builtin.set_fact:
+    site_existing_user_dirs: []
+  tags: ["site"]
+
+- name: Collect existing site user directories
+  ansible.builtin.set_fact:
+    site_existing_user_dirs: "{{ (site_existing_user_dirs | default([])) + [item.path | basename] }}"
+  loop: "{{ site_existing_dirs.files | default([]) }}"
+  when:
+    - site_parent_stat.stat.exists
+    - item.pw_name is defined
+    - item.pw_name == site.user
+    - item.path | basename != site.domain
+  loop_control:
+    label: "{{ item.path | basename }}"
+  tags: ["site"]
+
+- name: Fail if requested system user is already used by another site
+  ansible.builtin.fail:
+    msg: >-
+      Can't use system user {{ site.user }} for new site {{ site.domain }}.
+      Already assigned to:
+      {{ site_existing_user_dirs | join(', ') }}.
+  when:
+    - site_existing_user_dirs | default([]) | length > 0
+  tags: ["site"]

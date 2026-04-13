@@ -31,19 +31,6 @@
   changed_when: false
   tags: ["php", "site"]
 
-  # TODO: support both systemd-based hosts and Docker targets
-- name: Check if site PHP-FPM socket exists
-  ansible.builtin.stat:
-    path: "/run/php/php{{ php_version }}-{{ site.user }}.sock"
-  register: php_site_socket
-  tags: ["php", "site"]
-
-- name: Start PHP-FPM if not running
-  ansible.builtin.command: "php-fpm{{ php_version }} -D"
-  when: not php_site_socket.stat.exists
-  changed_when: not php_site_socket.stat.exists
-  tags: ["php", "site"]
-
 - name: Build PHP-FPM pool candidates
   ansible.builtin.set_fact:
     php_site_pool_candidates: >-

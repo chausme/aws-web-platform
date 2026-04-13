@@ -58,6 +58,8 @@ The PHP version is configurable and supports versions from 7.4 to 8.5. To use a 
 
 Open `http://localhost:8080` in your browser.
 
+Alternatively, map test domains in the system hosts file and access sites using their domain names, for example: `http://example.com:8080`. This ensures nginx can correctly match virtual hosts based on the request hostname.
+
 ### 7. Review inside the container
 
 ```bash
@@ -123,7 +125,24 @@ This will:
 - remove old PHP-FPM pool configurations for this site from other PHP versions
 - update nginx configuration to use the new PHP-FPM socket
 
+### Add another site
+
+To add another site, define a new site variable set in `ansible/group_vars/web.yml` and then run the site playbook again:
+
+```bash
+.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
+```
+
+This will:
+
+- create the system user and directories
+- install PHP and required packages if not already installed
+- configure PHP-FPM pool
+- configure and enable nginx site
+
 ## Notes
 
-- Site system users are treated as persistent once created and can't be changed for an existing site.
+- Site system users are treated as unique and persistent:
+    - they cannot be changed for an existing site
+    - they cannot be reused across multiple sites
 - In the local Docker environment, all data is ephemeral and reset after container removal.
