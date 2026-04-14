@@ -17,19 +17,27 @@ pip install -r requirements.txt
 ansible-galaxy collection install -r ansible/collections/requirements.yml
 ```
 
-### 2. Start local test container
+### 2. Add local environment variables
+
+Copy the example `local/.env.example` and update values as needed. This file defines environment variables used by Docker services such as MySQL credentials.
+
+```bash
+cp local/.env.example local/.env
+```
+
+### 3. Start local test container
 
 ```bash
 docker compose -f local/compose.yml up -d --build
 ```
 
-### 3. Run server configuration playbook
+### 4. Run server configuration playbook
 
 ```bash
 .venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/server.yml
 ```
 
-### 4. Define site configuration
+### 5. Define site configuration
 
 Site settings such as PHP version, domain, system user and application type are defined in:
 
@@ -48,28 +56,36 @@ site:
 
 The PHP version is configurable and supports versions from 7.4 to 8.5. To use a different version, update this value before running the site playbook.
 
-### 5. Run site setup playbook
+### 6. Run site setup playbook
 
 ```bash
 .venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml
 ```
 
-### 6. Verify in browser
+### 7. Verify in browser
 
 Open `http://localhost:8080` in your browser.
 
 Alternatively, map test domains in the system hosts file and access sites using their domain names, for example: `http://example.com:8080`. This ensures nginx can correctly match virtual hosts based on the request hostname.
 
-### 7. Review inside the container
+### 8. Review inside the container
 
 ```bash
 docker exec -it ansible_target /bin/bash
 ```
 
-### 8. Reset environment
+### 9. Reset environment
+
+Ansible target only
 
 ```bash
 docker compose -f local/compose.yml down --rmi local
+```
+
+Ansible target and MySQL data
+
+```bash
+docker compose -f local/compose.yml down --rmi local --volumes
 ```
 
 ## Example scenarios
@@ -139,4 +155,4 @@ This will:
 - Site system users are treated as unique and persistent:
     - they cannot be changed for an existing site
     - they cannot be reused across multiple sites
-- In the local Docker environment, all data is ephemeral and reset after container removal.
+- In the local Docker environment, all data inside the Ansible target container is ephemeral and reset after container removal. MySQL data is persisted in a Docker volume, but can be removed using the `--volumes` flag

@@ -6,3 +6,17 @@ services:
     tty: true
     ports:
       - "8080:80"
+  mysql:
+    image: mysql:8.4
+    command: --collation-server=utf8mb4_unicode_ci
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysql_data:
