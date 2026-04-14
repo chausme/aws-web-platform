@@ -36,11 +36,11 @@ Site settings such as PHP version, domain, system user and application type are 
 `ansible/group_vars/web.yml`
 
 ```bash
-php_version: "8.3"
 site:
   domain: "example.com"
   user: "siteuser"
   app: "wordpress" # supported: "php", "wordpress"
+  php_version: "8.3"
 ```
 
 - `php` provisions a generic PHP site
@@ -106,16 +106,10 @@ This will:
 
 ### Change PHP version for an existing site
 
-To change the PHP version for an existing site, update the `php_version` value in `ansible/group_vars/web.yml` and then run the site playbook again:
+To change the PHP version for an existing site, update the `site.php_version` value in `ansible/group_vars/web.yml` and then run the site playbook again:
 
 ```bash
 .venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml --tags php
-```
-
-Alternatively, you can run the playbook with php version defined as an extra variable:
-
-```bash
-.venv/bin/ansible-playbook -i ansible/inventories/local/inventory.yml ansible/site.yml --tags php -e "php_version=8.4"
 ```
 
 This will:
