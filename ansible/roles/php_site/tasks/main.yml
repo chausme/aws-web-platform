@@ -1,8 +1,8 @@
 - name: Validate PHP version
   ansible.builtin.assert:
     that:
-      - php_version in php_site_supported_versions
-    fail_msg: "Unsupported php_version '{{ php_version }}'. Supported versions: {{ php_site_supported_versions | join(', ') }}"
+      - site.php_version in php_site_supported_versions
+    fail_msg: "Unsupported site.php_version '{{ site.php_version }}'. Supported versions: {{ php_site_supported_versions | join(', ') }}"
   tags: ["php", "site"]
 
 - name: Initialize PHP-FPM pool candidates
@@ -19,7 +19,7 @@
 - name: Deploy site PHP-FPM pool
   ansible.builtin.template:
     src: php-fpm-pool.conf.j2
-    dest: "/etc/php/{{ php_version }}/fpm/pool.d/{{ site.user }}.conf"
+    dest: "/etc/php/{{ site.php_version }}/fpm/pool.d/{{ site.user }}.conf"
     owner: root
     group: root
     mode: "0644"
@@ -27,7 +27,7 @@
   tags: ["php", "site"]
 
 - name: Validate PHP-FPM configuration
-  ansible.builtin.command: "php-fpm{{ php_version }} -t"
+  ansible.builtin.command: "php-fpm{{ site.php_version }} -t"
   changed_when: false
   tags: ["php", "site"]
 
@@ -63,6 +63,6 @@
     loop_var: result
     label: "{{ result.pool.version }} -> {{ result.pool.path }}"
   when:
-    - result.pool.version != php_version
+    - result.pool.version != site.php_version
     - result.stat.exists
   tags: ["php", "site"]
