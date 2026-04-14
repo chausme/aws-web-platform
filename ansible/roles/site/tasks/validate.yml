@@ -9,6 +9,13 @@
     fail_msg: "site.user, site.domain, and site.app must be defined and valid"
   tags: ["site"]
 
+- name: Validate PHP version
+  ansible.builtin.assert:
+    that:
+      - site.php_version in php_site_supported_versions
+    fail_msg: "Unsupported site.php_version '{{ site.php_version }}'. Supported versions: {{ php_site_supported_versions | join(', ') }}"
+  tags: ["php", "site"]
+
 - name: Check if site root exists
   ansible.builtin.stat:
     path: "/sites/{{ site.domain }}"
